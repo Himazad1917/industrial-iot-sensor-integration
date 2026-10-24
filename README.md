@@ -7,48 +7,54 @@ Understand the layers in a typical industrial IoT monitoring solution and the qu
 
 ## Reference architecture
 
-```mermaid
+~~~mermaid
 flowchart LR
-  A[Sensor: T / RH / process value] --> B[Interface or controller]
-  B -->|RS485 / Modbus RTU, if supported| C[IoT gateway]
-  C -->|Approved network| D[Application or platform]
-  D --> E[Dashboard, alarms, data export]
-```
+  A[Sensor / transmitter] --> B[Interface or controller]
+  B --> C[Gateway]
+  C --> D[Network / broker / API]
+  D --> E[Dashboard / historian / alerts]
+~~~
 
-Each device must support the chosen interface and protocol. A gateway does not automatically translate every sensor protocol.
+## Guides and projects
+
+- [Temperature & RH Monitoring](guides/temperature-humidity-monitoring.md) — installation planning, data quality, validation and troubleshooting
+- [Industrial Sensor Documentation Template](guides/industrial-sensor-documentation-template.md) — reusable model/specification and commissioning template
+- [KLED-70 NIR Moisture Transmitter Study](projects/kled-70-nir-moisture-transmitter/README.md) — overview based on KLED's public product page, integration questions and validation checklist
 
 ## Integration checklist
-1. Identify the exact sensor model, measured variable, range, units, supply, and output.
-2. Confirm interface and protocol from the official datasheet.
-3. Verify wiring, grounding, isolation, and environmental requirements against manufacturer instructions.
-4. For Modbus devices, confirm address, baud rate, parity, stop bits, register map, scaling, and byte/word order.
-5. Define gateway network settings and data destination with the system owner.
-6. Validate values against a trusted reference where appropriate and record test conditions.
-7. Document alarms, failure modes, maintenance, and recovery steps.
 
-## Example data (illustrative only)
-```json
+1. Identify exact model, variant, datasheet, output type, power requirements, and environmental limits.
+2. Confirm the interface and protocol separately. RS485 is an electrical interface; Modbus RTU is a protocol.
+3. Verify wiring, grounding, shielding, termination, and supply using the exact device manual.
+4. Validate units, scaling, timestamps, data quality, and expected update interval.
+5. Test communication loss and recovery in a controlled environment.
+6. Keep passwords, tokens, keys, customer details, and proprietary configuration out of public repositories.
+
+## Illustrative sample data
+
+~~~json
 {
-  "device_id": "demo-sensor-01",
-  "temperature_c": 23.4,
-  "relative_humidity_percent": 46.2,
-  "timestamp": "2026-01-01T10:00:00Z",
-  "data_status": "illustrative"
+  "timestamp": "2026-01-01T12:00:00Z",
+  "temperature_c": 24.6,
+  "relative_humidity_pct": 48.2,
+  "quality": "illustrative"
 }
-```
-These values are sample data, not a real installation.
+~~~
 
-## Troubleshooting
-- **No data:** check power, physical interface, protocol compatibility, address, and gateway logs.
-- **Intermittent serial communication:** inspect cable routing, termination/biasing design, topology, baud/parity, and grounding per device documentation.
-- **Plausible but incorrect readings:** check units, scaling, register mapping, sensor placement, and calibration status.
-- **Data visible locally but not remotely:** inspect gateway network configuration, destination endpoint, firewall rules, and timestamps.
+These values are examples only and are not readings from a deployed device.
 
-## Safety and limitations
-Follow site electrical and process-safety procedures. Never connect unknown terminals based only on wire colour. Do not publish customer configurations, credentials, site details, or proprietary company documentation.
+## Troubleshooting prompts
 
-## References
+| Symptom | First checks |
+|---|---|
+| No values | Power, interface type, wiring, device address, settings and gateway logs |
+| Wrong scale | Units, engineering range, input mode and manufacturer scaling documentation |
+| Intermittent data | Supply, cabling, interference, topology, timeouts and logs |
+| Values look plausible but wrong | Sensor placement, calibration, reference method and process conditions |
+
+## Scope and references
+
+This repository is educational. It does not claim physical hardware testing, customer deployment, or manufacturer endorsement. Use the current product manual and site safety procedures for actual installation.
+
+- [KLED Measurement](https://www.kledmeasurement.in/)
 - [Modbus specifications](https://www.modbus.org/specs.php)
-- [GitHub diagrams in Markdown](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)
-
-**Status:** Learning/reference documentation. Hardware testing is not claimed.
